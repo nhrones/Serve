@@ -1,0 +1,18 @@
+{
+   "version": "2.0.0",
+   "tasks": [
+      {
+         "label": "Serve",
+         "type": "shell",
+         "command": "serve",
+         "problemMatcher": [],
+      },
+      {
+         "label": "Serve Dist",
+         "type": "shell",
+         "command": "serve",
+         "args": ["dist", "3333" ],
+         "problemMatcher": [],
+      }
+   ]
+}
