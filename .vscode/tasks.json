@@ -5,6 +5,7 @@
          "label": "Serve",
          "type": "shell",
          "command": "serve",
+         "args":["8989"],
          "problemMatcher": [],
       },
       {

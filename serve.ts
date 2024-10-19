@@ -1,43 +1,18 @@
 
-import { join } from "https://deno.land/std@0.224.0/path/mod.ts";
-import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";
+import { serveFile } from "jsr:@std/http@^1.0.8";
+import { getFullPath, openWebsite, port } from "./utils.ts";
 
-const folderArg = Deno.args[0]
-const portArg = Deno.args[1]
-const folder = (folderArg) ? folderArg : ""
-const port = (portArg) ? parseInt(portArg) : 80
-
-// Start the server -> routes all requests to the handler below
-Deno.serve({ port: port }, handleRequest )
-
-// Handle all HTTP requests
-async function handleRequest(request: Request): Promise<Response> {
-
-   // Get and adjust the requested path name
-   let { pathname } = new URL(request.url);
-   if (pathname === '/') pathname = '/index.html';
-
-   // build requested full-path
-   const fullPath = (folder.length > 1)
-      ? join(Deno.cwd() + '\\' + folder + pathname)
-      : join(Deno.cwd() + pathname);
-
-   console.log(`Serving ${fullPath}`);
-   
-   // find the file -> get the content -> return it in a response
-   const resp = await serveFile(request, fullPath)
+// Start our server and handle all HTTP requests
+Deno.serve({
+   onListen() {}
+   , port: port }, handler,)
+async function handler (req: Request): Promise<Response> {
+   // find the file -> get content -> return a response
+   const resp = await serveFile(req, getFullPath (req))
+   // we don't want to cache the response! See all changes immediately!
    resp.headers.append("Cache-Control", "no-store")
-   return resp  
+   return resp
 }
 
-const OnDeploy = !!Deno.env.get("DENO_REGION")
-
-// launch the browser
-if (!OnDeploy) { 
-   const command = new Deno.Command( "explorer.exe", {
-      args: [ `http://localhost:${port}` ],
-      stdin: "piped",
-      stdout: "piped",
-   });
-   command.spawn();
-}
+// if we're not running Deploy, launch our local browser
+if (!Deno.env.get("DENO_REGION")) openWebsite(`http://localhost:${port}`)
