@@ -59,11 +59,22 @@ export async function getBrowserCmd(): Promise<string> {
 }
 
 /**
- * Opens a website in the default browser
+ * Opens a website in the default browser (any OS)
  * @param url  - the url to be opened in the browser
- * @example await openWebsite('https://Deno.com')
+ * @example await openWebsite('https://Deno.com:8080')
  */
 export async function openWebsite(url: string) {
    return new Deno.Command(await getBrowserCmd(), 
    { args: [url] }).outputSync();
+}
+
+/** 
+ * launch the default browser (Windows only)  
+ */
+export function launchBrowser() {
+   if (!Deno.env.get("DENO_REGION")) { // not in Deploy
+      // Windows only command
+      new Deno.Command("cmd", { args: ["/C", "start", `http://localhost:${port}`] })
+         .outputSync()
+   }
 }
